@@ -20,4 +20,4 @@ A simple address book application to store and manage contact information.
 
 ## Flowchart
 
-![Preview](.assets/diagram.png)
+![Diagram](assets/image/diagram.png)
