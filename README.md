@@ -19,4 +19,5 @@ A simple address book application to store and manage contact information.
 - JavaScript
 
 ## Flowchart
-![Preview](./assets/diagram.png)
+
+![Preview](.assets/diagram.png)
