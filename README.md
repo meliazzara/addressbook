@@ -4,8 +4,8 @@ A simple address book application to store and manage contact information.
 
 ## Link
 
-- URL Deployment:
-- Repository :
+- URL Deployment: https://addressbookmel.vercel.app/
+- Repository : https://github.com/meliazzara/addressbook
 
 ## Features
 
