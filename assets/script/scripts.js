@@ -1,16 +1,16 @@
 let dataContacts = [
   {
     id: 1,
-    fullName: "Arkhan Hibban Habibi",
-    phone: "62881080070700",
-    email: "hibbanhabibi@example.com",
+    fullName: "Melia Az Zahra",
+    email: "zmeliaa@example.com",
+    phone: "62881080080800",
     location: "Jakarta",
   },
   {
     id: 2,
-    fullName: "Melia Az Zahra",
-    phone: "62881080080800",
-    email: "zmeliaa@example.com",
+    fullName: "Arkhan Hibban Habibi",
+    email: "hibbanhabibi@example.com",
+    phone: "62881080070700",
     location: "Jakarta",
   },
 ];
@@ -22,56 +22,85 @@ function renderContacts(contacts = dataContacts) {
   if (contacts.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="5" class="empty">No contacts available</td>
-      </tr>
-    `;
+        <td colspan="5" style="text-align:center;">No contacts available</td>
+      </tr>`;
     return;
   }
 
-  contacts.forEach((contact) => {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td><input type="checkbox"></td>
-      <td>${contact.fullName}</td>
-      <td>${contact.email}</td>
-      <td>${contact.phone}</td>
-      <td>${contact.location}</td>
+  contacts.forEach((c) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${c.fullName}</td>
+        <td>${c.email}</td>
+        <td>${c.phone}</td>
+        <td>${c.location}</td>
+        <td>
+          <button onclick="editContact(${c.id})">Edit</button>
+          <button class="delete" onclick="deleteContact(${c.id})">Delete</button>
+        </td>
+      </tr>
     `;
-
-    tbody.appendChild(row);
   });
 }
 
-function getLastId() {
-  if (dataContacts.length === 0) return 1;
-  return dataContacts[dataContacts.length - 1].id + 1;
-}
+function saveContact() {
+  const id = document.getElementById("contactId").value;
+  const fullName = document.getElementById("fullName").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+  const location = document.getElementById("location").value;
 
-function addContact(fullName, phone, email, location) {
-  dataContacts.push({
-    id: getLastId(),
-    fullName,
-    phone,
-    email,
-    location,
-  });
+  if (!fullName || !email || !phone || !location) {
+    alert("Semua field wajib diisi");
+    return;
+  }
 
+  if (id) {
+    const contact = dataContacts.find((c) => c.id == id);
+    contact.fullName = fullName;
+    contact.email = email;
+    contact.phone = phone;
+    contact.location = location;
+  } else {
+    dataContacts.push({
+      id: Date.now(),
+      fullName,
+      email,
+      phone,
+      location,
+    });
+  }
+
+  clearForm();
   renderContacts();
 }
 
-function searchContacts(keyword) {
-  const result = dataContacts.filter((contact) =>
-    contact.fullName.toLowerCase().includes(keyword.toLowerCase())
+function editContact(id) {
+  const c = dataContacts.find((c) => c.id === id);
+
+  document.getElementById("formTitle").innerText = "Edit Contact";
+  document.getElementById("contactId").value = c.id;
+  document.getElementById("fullName").value = c.fullName;
+  document.getElementById("email").value = c.email;
+  document.getElementById("phone").value = c.phone;
+  document.getElementById("location").value = c.location;
+}
+
+function deleteContact(id) {
+  if (!confirm("Yakin ingin menghapus contact ini?")) return;
+
+  dataContacts = dataContacts.filter((c) => c.id !== id);
+  renderContacts();
+}
+
+function searchContacts() {
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+
+  const result = dataContacts.filter((c) =>
+    c.fullName.toLowerCase().includes(keyword)
   );
 
   renderContacts(result);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderContacts();
-
-  // TEST (BOLEH DIHAPUS)
-  addContact("Nam Jo Hyuk", "6281234567890", "hyuk@example.com", "Jakarta");
-  addContact("Nam Jo Hyuk", "6281234567890", "hyuk@example.com", "Jakarta");
-});
+document.addEventListener("DOMContentLoaded", renderContacts);

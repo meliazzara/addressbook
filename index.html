@@ -16,6 +16,23 @@
         color: #2f855a;
       }
 
+      input,
+      button {
+        padding: 8px;
+        margin: 5px 0;
+      }
+
+      button {
+        cursor: pointer;
+        background: #2f855a;
+        color: white;
+        border: none;
+      }
+
+      button.delete {
+        background: #e53e3e;
+      }
+
       table {
         width: 100%;
         border-collapse: collapse;
@@ -23,35 +40,64 @@
         margin-top: 15px;
       }
 
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #cbd5e0;
+      }
+
       thead {
         background: #2f855a;
         color: white;
       }
 
-      th,
-      td {
-        padding: 10px;
-        border: 1px solid #cbd5e0;
-        text-align: left;
-      }
-
-      .empty {
-        text-align: center;
-        font-style: italic;
+      .form-box {
+        background: #fff;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
       }
     </style>
   </head>
   <body>
-    <h1>Contacts</h1>
+    <h1>📒 Address Book</h1>
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search by name..."
+      onkeyup="searchContacts()"
+    />
+
+    <div class="form-box">
+      <h3 id="formTitle">Add Contact</h3>
+
+      <input type="hidden" id="contactId" />
+
+      <div>
+        <input type="text" id="fullName" placeholder="Full Name" />
+      </div>
+      <div>
+        <input type="email" id="email" placeholder="Email" />
+      </div>
+      <div>
+        <input type="text" id="phone" placeholder="Phone Number" />
+      </div>
+      <div>
+        <input type="text" id="location" placeholder="Location" />
+      </div>
+
+      <button onclick="saveContact()">Save</button>
+    </div>
 
     <table>
       <thead>
         <tr>
-          <th></th>
           <th>Name</th>
           <th>Email</th>
-          <th>Phone Number</th>
+          <th>Phone</th>
           <th>Location</th>
+          <th>Action</th>
         </tr>
       </thead>
 
