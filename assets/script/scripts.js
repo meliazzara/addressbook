@@ -15,81 +15,81 @@ let dataContacts = [
   },
 ];
 
-function renderContacts(contacts = dataContacts) {
+function renderContacts(list = dataContacts) {
   const tbody = document.getElementById("contactTableBody");
   tbody.innerHTML = "";
 
-  if (contacts.length === 0) {
+  if (list.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="5" style="text-align:center;">No contacts available</td>
-      </tr>`;
+        <td colspan="5" class="empty">No contacts available</td>
+      </tr>
+    `;
     return;
   }
 
-  contacts.forEach((c) => {
+  list.forEach((c) => {
     tbody.innerHTML += `
       <tr>
+        <td><input type="checkbox" class="selectContact" data-id="${c.id}"></td>
         <td>${c.fullName}</td>
         <td>${c.email}</td>
         <td>${c.phone}</td>
         <td>${c.location}</td>
-        <td>
-          <button onclick="editContact(${c.id})">Edit</button>
-          <button class="delete" onclick="deleteContact(${c.id})">Delete</button>
-        </td>
       </tr>
     `;
   });
 }
 
-function saveContact() {
-  const id = document.getElementById("contactId").value;
-  const fullName = document.getElementById("fullName").value;
-  const email = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
-  const location = document.getElementById("location").value;
+function openNew() {
+  const fullName = prompt("Nama:");
+  const email = prompt("Email:");
+  const phone = prompt("Phone:");
+  const location = prompt("Location:");
 
-  if (!fullName || !email || !phone || !location) {
-    alert("Semua field wajib diisi");
-    return;
-  }
+  if (!fullName || !email || !phone || !location) return;
 
-  if (id) {
-    const contact = dataContacts.find((c) => c.id == id);
-    contact.fullName = fullName;
-    contact.email = email;
-    contact.phone = phone;
-    contact.location = location;
-  } else {
-    dataContacts.push({
-      id: Date.now(),
-      fullName,
-      email,
-      phone,
-      location,
-    });
-  }
+  dataContacts.push({
+    id: Date.now(),
+    fullName,
+    email,
+    phone,
+    location,
+  });
 
-  clearForm();
   renderContacts();
 }
 
-function editContact(id) {
-  const c = dataContacts.find((c) => c.id === id);
+function editSelected() {
+  const checked = document.querySelector(".selectContact:checked");
+  if (!checked) {
+    alert("Pilih 1 data dulu");
+    return;
+  }
 
-  document.getElementById("formTitle").innerText = "Edit Contact";
-  document.getElementById("contactId").value = c.id;
-  document.getElementById("fullName").value = c.fullName;
-  document.getElementById("email").value = c.email;
-  document.getElementById("phone").value = c.phone;
-  document.getElementById("location").value = c.location;
+  const id = Number(checked.dataset.id);
+  const c = dataContacts.find((x) => x.id === id);
+
+  c.fullName = prompt("Nama:", c.fullName);
+  c.email = prompt("Email:", c.email);
+  c.phone = prompt("Phone:", c.phone);
+  c.location = prompt("Location:", c.location);
+
+  renderContacts();
 }
 
-function deleteContact(id) {
-  if (!confirm("Yakin ingin menghapus contact ini?")) return;
+function deleteSelected() {
+  const checked = document.querySelectorAll(".selectContact:checked");
+  if (checked.length === 0) {
+    alert("Pilih data dulu");
+    return;
+  }
 
-  dataContacts = dataContacts.filter((c) => c.id !== id);
+  if (!confirm("Yakin hapus data?")) return;
+
+  const ids = [...checked].map((c) => Number(c.dataset.id));
+  dataContacts = dataContacts.filter((c) => !ids.includes(c.id));
+
   renderContacts();
 }
 

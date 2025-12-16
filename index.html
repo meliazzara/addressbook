@@ -2,108 +2,136 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Address Book</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Address Book</title>
 
     <style>
       body {
-        font-family: Arial, sans-serif;
-        background: #ffdce9;
-        padding: 30px;
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #ffd6e7;
+      }
+
+      .container {
+        margin: 30px;
+        background: #ffd6e7;
+        border-radius: 12px;
+        padding: 20px;
       }
 
       h1 {
-        color: #2f855a;
+        color: #2f8f5b;
+        margin-bottom: 15px;
       }
 
-      input,
-      button {
-        padding: 8px;
-        margin: 5px 0;
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
       }
 
-      button {
-        cursor: pointer;
-        background: #2f855a;
+      .btn-group button {
+        background: #2f8f5b;
         color: white;
         border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-right: 5px;
       }
 
-      button.delete {
-        background: #e53e3e;
+      .search-group {
+        display: flex;
+        gap: 6px;
+      }
+
+      .search-group input {
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        width: 200px;
+      }
+
+      .search-group button {
+        background: #2f8f5b;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        background: #e6f7ef;
-        margin-top: 15px;
+        background: #e8f6ee;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      thead {
+        background: #2f8f5b;
+        color: white;
       }
 
       th,
       td {
-        padding: 10px;
-        border: 1px solid #cbd5e0;
+        padding: 12px;
+        text-align: left;
       }
 
-      thead {
-        background: #2f855a;
-        color: white;
+      tbody tr {
+        border-bottom: 1px solid #cde8d9;
       }
 
-      .form-box {
-        background: #fff;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 5px;
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .empty {
+        text-align: center;
+        color: #2f8f5b;
+        font-style: italic;
       }
     </style>
   </head>
+
   <body>
-    <h1>📒 Address Book</h1>
+    <div class="container">
+      <h1>Contacts</h1>
 
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search by name..."
-      onkeyup="searchContacts()"
-    />
+      <div class="top-bar">
+        <div class="btn-group">
+          <button onclick="openNew()">+ New</button>
+          <button onclick="editSelected()">Edit</button>
+          <button onclick="deleteSelected()">Delete</button>
+        </div>
 
-    <div class="form-box">
-      <h3 id="formTitle">Add Contact</h3>
-
-      <input type="hidden" id="contactId" />
-
-      <div>
-        <input type="text" id="fullName" placeholder="Full Name" />
-      </div>
-      <div>
-        <input type="email" id="email" placeholder="Email" />
-      </div>
-      <div>
-        <input type="text" id="phone" placeholder="Phone Number" />
-      </div>
-      <div>
-        <input type="text" id="location" placeholder="Location" />
+        <div class="search-group">
+          <input type="text" id="searchInput" placeholder="Search..." />
+          <button onclick="searchContacts()">Filter</button>
+        </div>
       </div>
 
-      <button onclick="saveContact()">Save</button>
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" disabled /></th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody id="contactTableBody">
+          <tr>
+            <td colspan="5" class="empty">No contacts available</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Location</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-
-      <tbody id="contactTableBody"></tbody>
-    </table>
-
-    <script src="./assets/script/scripts.js"></script>
+    <script src="assets/script/scripts.js"></script>
   </body>
 </html>
