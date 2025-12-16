@@ -4,132 +4,65 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Address Book</title>
-
-    <style>
-      body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: #ffd6e7;
-      }
-
-      .container {
-        margin: 30px;
-        background: #ffd6e7;
-        border-radius: 12px;
-        padding: 20px;
-      }
-
-      h1 {
-        color: #2f8f5b;
-        margin-bottom: 15px;
-      }
-
-      .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-      }
-
-      .btn-group button {
-        background: #2f8f5b;
-        color: white;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-right: 5px;
-      }
-
-      .search-group {
-        display: flex;
-        gap: 6px;
-      }
-
-      .search-group input {
-        padding: 8px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        width: 200px;
-      }
-
-      .search-group button {
-        background: #2f8f5b;
-        color: white;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #e8f6ee;
-        border-radius: 12px;
-        overflow: hidden;
-      }
-
-      thead {
-        background: #2f8f5b;
-        color: white;
-      }
-
-      th,
-      td {
-        padding: 12px;
-        text-align: left;
-      }
-
-      tbody tr {
-        border-bottom: 1px solid #cde8d9;
-      }
-
-      tbody tr:last-child {
-        border-bottom: none;
-      }
-
-      .empty {
-        text-align: center;
-        color: #2f8f5b;
-        font-style: italic;
-      }
-    </style>
+    <link rel="stylesheet" href="assets/style/style.css" />
   </head>
-
   <body>
     <div class="container">
       <h1>Contacts</h1>
 
-      <div class="top-bar">
-        <div class="btn-group">
+      <div class="toolbar">
+        <div class="left">
           <button onclick="openNew()">+ New</button>
           <button onclick="editSelected()">Edit</button>
           <button onclick="deleteSelected()">Delete</button>
         </div>
-
-        <div class="search-group">
-          <input type="text" id="searchInput" placeholder="Search..." />
-          <button onclick="searchContacts()">Filter</button>
+        <div class="right">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search..."
+            onkeyup="searchContacts()"
+          />
         </div>
       </div>
 
       <table>
         <thead>
           <tr>
-            <th><input type="checkbox" disabled /></th>
+            <th><input type="checkbox" onclick="toggleAll(this)" /></th>
             <th>Name</th>
             <th>Email</th>
             <th>Phone Number</th>
             <th>Location</th>
           </tr>
         </thead>
-        <tbody id="contactTableBody">
-          <tr>
-            <td colspan="5" class="empty">No contacts available</td>
-          </tr>
-        </tbody>
+        <tbody id="contactTableBody"></tbody>
       </table>
+    </div>
+
+    <div class="modal" id="contactModal">
+      <div class="modal-content">
+        <h2 id="modalTitle">New Contact</h2>
+
+        <input type="hidden" id="contactId" />
+
+        <label>Name</label>
+        <input type="text" id="fullName" />
+
+        <label>Email</label>
+        <input type="email" id="email" />
+
+        <label>Phone</label>
+        <input type="text" id="phone" />
+
+        <label>Location</label>
+        <input type="text" id="location" />
+
+        <div class="modal-actions">
+          <button onclick="closeModal()">Cancel</button>
+          <button class="primary" onclick="saveContact()">Save</button>
+        </div>
+      </div>
     </div>
 
     <script src="assets/script/scripts.js"></script>
