@@ -12,6 +12,36 @@ function load() {
   dataContacts = data ? JSON.parse(data) : [];
 }
 
+// ===== AUTO DETECT CITY =====
+function detectCity() {
+  if (!navigator.geolocation) {
+    location.value = "-";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+        );
+        const data = await res.json();
+
+        location.value =
+          data.address.city || data.address.town || data.address.village || "-";
+      } catch {
+        location.value = "-";
+      }
+    },
+    () => {
+      location.value = "-";
+    }
+  );
+}
+
 // ===== RENDER =====
 function render(data = dataContacts) {
   const tbody = document.getElementById("contactTableBody");
@@ -37,7 +67,7 @@ function render(data = dataContacts) {
         <td class="p-3">${c.fullName}</td>
         <td class="p-3">${c.email}</td>
         <td class="p-3">${c.phone}</td>
-        <td class="p-3">${c.location}</td>
+        <td class="p-3">${c.location || "-"}</td>
       </tr>
     `;
   });
@@ -51,16 +81,19 @@ function openNew() {
   fullName.value = "";
   email.value = "";
   phone.value = "";
-  location.value = "";
+  location.value = "Detecting...";
+
   contactModal.classList.remove("hidden");
   contactModal.classList.add("flex");
+
+  detectCity(); // ⭐ AUTO
 }
 
 function closeModal() {
   contactModal.classList.add("hidden");
 }
 
-// ===== SAVE CONTACT =====
+// ===== SAVE =====
 function saveContact() {
   const id = contactId.value;
 
@@ -69,7 +102,7 @@ function saveContact() {
     fullName: fullName.value,
     email: email.value,
     phone: phone.value,
-    location: location.value, // FIX: selalu sesuai input
+    location: location.value.trim() || "-",
   };
 
   if (editMode) {
@@ -107,7 +140,6 @@ function editSelected() {
 function deleteSelected() {
   const selected = document.querySelectorAll(".select:checked");
   if (selected.length === 0) return alert("Pilih data");
-
   if (!confirm("Yakin hapus?")) return;
 
   const ids = [...selected].map((s) => Number(s.dataset.id));
@@ -123,7 +155,7 @@ function searchContacts() {
   render(dataContacts.filter((c) => c.fullName.toLowerCase().includes(q)));
 }
 
-// ===== CHECK ALL =====
+// ===== TOGGLE =====
 function toggleAll(source) {
   document
     .querySelectorAll(".select")
