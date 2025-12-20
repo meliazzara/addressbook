@@ -1,134 +1,157 @@
-const STORAGE_KEY = "addressbook_contacts";
-let dataContacts = [];
-let editMode = false;
+let contacts = JSON.parse(localStorage.getItem("contacts")) || [
+  {
+    id: 1,
+    name: "Lesya Salsabilla Putri",
+    phone: 62881080070700,
+    email: "lesyabilla81@gmail.com",
+    location: "Jakarta",
+  },
+  {
+    id: 2,
+    name: "Zhidane Fachri Ramadhan",
+    phone: 62881080080800,
+    email: "zhidane28@gmail.com",
+    location: "Bandung",
+  },
+];
 
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataContacts));
+function saveContacts() {
+  localStorage.setItem("contacts", JSON.stringify(contacts));
 }
-function load() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (data) dataContacts = JSON.parse(data);
-}
 
-function render(data = dataContacts) {
-  const tbody = document.getElementById("contactTableBody");
-  tbody.innerHTML = "";
+// DISPLAY CONTACT
+function displayContacts() {
+  const tableBody = document.getElementById("contactsTableBody");
+  tableBody.innerHTML = "";
 
-  if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty">No contacts available</td></tr>`;
+  if (contacts.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="5" class="p-4 text-center text-gray-500 italic">
+          No contacts available
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  data.forEach((c) => {
-    tbody.innerHTML += `
-      <tr>
-        <td><input type="checkbox" class="select" data-id="${c.id}"></td>
-        <td>${c.fullName}</td>
-        <td>${c.email}</td>
-        <td>${c.phone}</td>
-        <td>${c.location}</td>
+  for (const contact of contacts) {
+    console.log(`
+      🆔 : ${contact.id}
+      🧑‍🦱 : ${contact.name}
+      📱 : ${contact.phone}
+      📍 : ${contact.location}
+      ✉️ : ${contact.email}
+    `);
+
+    tableBody.innerHTML += `
+      <tr class="border-b">
+        <td class="p-2">
+          <input type="checkbox">
+        </td>
+        <td class="p-2">${contact.name}</td>
+        <td class="p-2">${contact.email}</td>
+        <td class="p-2">${contact.phone}</td>
+        <td class="p-2">${contact.location}</td>
       </tr>
     `;
+  }
+}
+
+// AUTO ID
+function getLastId() {
+  if (contacts.length === 0) return 1;
+  return contacts[contacts.length - 1].id + 1;
+}
+
+// ADD CONTACT
+function addContact(name, phone, email, location) {
+  contacts.push({
+    id: getLastId(),
+    name,
+    phone,
+    email,
+    location,
   });
+
+  saveContacts();
+  displayContacts();
 }
 
-function openNew() {
-  editMode = false;
-  document.getElementById("modalTitle").innerText = "New Contact";
-  document.getElementById("contactId").value = "";
-  document
-    .querySelectorAll(".modal-content input")
-    .forEach((i) => (i.value = ""));
-  document.getElementById("contactModal").style.display = "flex";
-}
+// SEARCH CONTACT
+function searchContacts(keyword) {
+  const filteredContacts = contacts.filter(
+    (contact) =>
+      contact.name.toLowerCase().includes(keyword.toLowerCase()) ||
+      contact.email.toLowerCase().includes(keyword.toLowerCase()) ||
+      contact.location.toLowerCase().includes(keyword.toLowerCase()) ||
+      contact.phone.toString().includes(keyword)
+  );
 
-function closeModal() {
-  document.getElementById("contactModal").style.display = "none";
-}
+  const tableBody = document.getElementById("contactsTableBody");
+  tableBody.innerHTML = "";
 
-function saveContact() {
-  const id = document.getElementById("contactId").value;
-  const contact = {
-    id: id || Date.now(),
-    fullName: fullName.value,
-    email: email.value,
-    phone: phone.value,
-    location: location.value,
-  };
-
-  if (editMode) {
-    const index = dataContacts.findIndex((c) => c.id == id);
-    dataContacts[index] = contact;
-  } else {
-    dataContacts.push(contact);
+  if (filteredContacts.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="5" class="p-4 text-center text-gray-500 italic">
+          No contact found
+        </td>
+      </tr>
+    `;
+    return;
   }
 
-  save();
-  render();
-  closeModal();
-}
-
-function editSelected() {
-  const selected = document.querySelector(".select:checked");
-  if (!selected) return alert("Pilih satu data");
-
-  const contact = dataContacts.find((c) => c.id == selected.dataset.id);
-  editMode = true;
-
-  contactId.value = contact.id;
-  fullName.value = contact.fullName;
-  email.value = contact.email;
-  phone.value = contact.phone;
-  location.value = contact.location;
-
-  modalTitle.innerText = "Edit Contact";
-  contactModal.style.display = "flex";
-}
-
-function deleteSelected() {
-  const selected = document.querySelectorAll(".select:checked");
-  if (selected.length === 0) return alert("Pilih data");
-
-  if (!confirm("Yakin hapus?")) return;
-
-  const ids = [...selected].map((s) => s.dataset.id);
-  dataContacts = dataContacts.filter((c) => !ids.includes(String(c.id)));
-
-  save();
-  render();
-}
-
-function searchContacts() {
-  const q = searchInput.value.toLowerCase();
-  render(dataContacts.filter((c) => c.fullName.toLowerCase().includes(q)));
-}
-
-function toggleAll(source) {
-  document
-    .querySelectorAll(".select")
-    .forEach((cb) => (cb.checked = source.checked));
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  load();
-  if (dataContacts.length === 0) {
-    dataContacts = [
-      {
-        id: 1,
-        fullName: "Arkhan Hibban Habibi",
-        email: "hibban@example.com",
-        phone: "6288...",
-        location: "Jakarta",
-      },
-      {
-        id: 2,
-        fullName: "Melia Az Zahra",
-        email: "melia@example.com",
-        phone: "6288...",
-        location: "Jakarta",
-      },
-    ];
-    save();
+  for (const contact of filteredContacts) {
+    tableBody.innerHTML += `
+      <tr class="border-b">
+        <td class="p-2">
+          <input type="checkbox">
+        </td>
+        <td class="p-2">${contact.name}</td>
+        <td class="p-2">${contact.email}</td>
+        <td class="p-2">${contact.phone}</td>
+        <td class="p-2">${contact.location}</td>
+      </tr>
+    `;
   }
-  render();
+}
+
+// DELETE CONTACT
+function deleteContact(id) {
+  const index = contacts.findIndex((c) => c.id === id);
+
+  if (index === -1) {
+    console.log(`❌ Contact with ID ${id} not found.`);
+    return;
+  }
+
+  contacts.splice(index, 1);
+  saveContacts();
+  displayContacts();
+}
+
+// UPDATE CONTACT
+function updateContact(id, newData) {
+  const contact = contacts.find((c) => c.id === id);
+
+  if (!contact) {
+    console.log(`❌ Contact with ID ${id} not found.`);
+    return;
+  }
+
+  contact.name = newData.name ?? contact.name;
+  contact.phone = newData.phone ?? contact.phone;
+  contact.email = newData.email ?? contact.email;
+  contact.location = newData.location ?? contact.location;
+
+  saveContacts();
+  displayContacts();
+}
+
+document.getElementById("searchInput").addEventListener("input", function () {
+  const keyword = this.value;
+  searchContacts(keyword);
 });
+
+displayContacts();
