@@ -1,33 +1,26 @@
-let contacts = JSON.parse(localStorage.getItem("contacts")) || [
-  {
-    id: 1,
-    name: "Lesya Salsabilla Putri",
-    phone: 62881080070700,
-    email: "lesyabilla81@gmail.com",
-    location: "Jakarta",
-  },
-  {
-    id: 2,
-    name: "Zhidane Fachri Ramadhan",
-    phone: 62881080080800,
-    email: "zhidane28@gmail.com",
-    location: "Bandung",
-  },
-];
+const STORAGE_KEY = "addressbook_contacts";
+let dataContacts = [];
+let editMode = false;
 
-function saveContacts() {
-  localStorage.setItem("contacts", JSON.stringify(contacts));
+// ===== STORAGE =====
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataContacts));
 }
 
-// DISPLAY CONTACT
-function displayContacts() {
-  const tableBody = document.getElementById("contactsTableBody");
-  tableBody.innerHTML = "";
+function load() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  dataContacts = data ? JSON.parse(data) : [];
+}
 
-  if (contacts.length === 0) {
-    tableBody.innerHTML = `
+// ===== RENDER =====
+function render(data = dataContacts) {
+  const tbody = document.getElementById("contactTableBody");
+  tbody.innerHTML = "";
+
+  if (data.length === 0) {
+    tbody.innerHTML = `
       <tr>
-        <td colspan="5" class="p-4 text-center text-gray-500 italic">
+        <td colspan="5" class="text-center py-6 italic text-slate-200">
           No contacts available
         </td>
       </tr>
@@ -35,123 +28,110 @@ function displayContacts() {
     return;
   }
 
-  for (const contact of contacts) {
-    console.log(`
-      🆔 : ${contact.id}
-      🧑‍🦱 : ${contact.name}
-      📱 : ${contact.phone}
-      📍 : ${contact.location}
-      ✉️ : ${contact.email}
-    `);
-
-    tableBody.innerHTML += `
-      <tr class="border-b">
-        <td class="p-2">
-          <input type="checkbox">
+  data.forEach((c) => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-slate-600 transition">
+        <td class="p-3">
+          <input type="checkbox" class="select" data-id="${c.id}">
         </td>
-        <td class="p-2">${contact.name}</td>
-        <td class="p-2">${contact.email}</td>
-        <td class="p-2">${contact.phone}</td>
-        <td class="p-2">${contact.location}</td>
+        <td class="p-3">${c.fullName}</td>
+        <td class="p-3">${c.email}</td>
+        <td class="p-3">${c.phone}</td>
+        <td class="p-3">${c.location}</td>
       </tr>
     `;
-  }
-}
-
-// AUTO ID
-function getLastId() {
-  if (contacts.length === 0) return 1;
-  return contacts[contacts.length - 1].id + 1;
-}
-
-// ADD CONTACT
-function addContact(name, phone, email, location) {
-  contacts.push({
-    id: getLastId(),
-    name,
-    phone,
-    email,
-    location,
   });
-
-  saveContacts();
-  displayContacts();
 }
 
-// SEARCH CONTACT
-function searchContacts(keyword) {
-  const filteredContacts = contacts.filter(
-    (contact) =>
-      contact.name.toLowerCase().includes(keyword.toLowerCase()) ||
-      contact.email.toLowerCase().includes(keyword.toLowerCase()) ||
-      contact.location.toLowerCase().includes(keyword.toLowerCase()) ||
-      contact.phone.toString().includes(keyword)
-  );
-
-  const tableBody = document.getElementById("contactsTableBody");
-  tableBody.innerHTML = "";
-
-  if (filteredContacts.length === 0) {
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="5" class="p-4 text-center text-gray-500 italic">
-          No contact found
-        </td>
-      </tr>
-    `;
-    return;
-  }
-
-  for (const contact of filteredContacts) {
-    tableBody.innerHTML += `
-      <tr class="border-b">
-        <td class="p-2">
-          <input type="checkbox">
-        </td>
-        <td class="p-2">${contact.name}</td>
-        <td class="p-2">${contact.email}</td>
-        <td class="p-2">${contact.phone}</td>
-        <td class="p-2">${contact.location}</td>
-      </tr>
-    `;
-  }
+// ===== MODAL =====
+function openNew() {
+  editMode = false;
+  modalTitle.innerText = "New Contact";
+  contactId.value = "";
+  fullName.value = "";
+  email.value = "";
+  phone.value = "";
+  location.value = "";
+  contactModal.classList.remove("hidden");
+  contactModal.classList.add("flex");
 }
 
-// DELETE CONTACT
-function deleteContact(id) {
-  const index = contacts.findIndex((c) => c.id === id);
-
-  if (index === -1) {
-    console.log(`❌ Contact with ID ${id} not found.`);
-    return;
-  }
-
-  contacts.splice(index, 1);
-  saveContacts();
-  displayContacts();
+function closeModal() {
+  contactModal.classList.add("hidden");
 }
 
-// UPDATE CONTACT
-function updateContact(id, newData) {
-  const contact = contacts.find((c) => c.id === id);
+// ===== SAVE CONTACT =====
+function saveContact() {
+  const id = contactId.value;
 
-  if (!contact) {
-    console.log(`❌ Contact with ID ${id} not found.`);
-    return;
+  const contact = {
+    id: id ? Number(id) : Date.now(),
+    fullName: fullName.value,
+    email: email.value,
+    phone: phone.value,
+    location: location.value, // FIX: selalu sesuai input
+  };
+
+  if (editMode) {
+    const index = dataContacts.findIndex((c) => c.id == id);
+    dataContacts[index] = contact;
+  } else {
+    dataContacts.push(contact);
   }
 
-  contact.name = newData.name ?? contact.name;
-  contact.phone = newData.phone ?? contact.phone;
-  contact.email = newData.email ?? contact.email;
-  contact.location = newData.location ?? contact.location;
-
-  saveContacts();
-  displayContacts();
+  save();
+  render();
+  closeModal();
 }
 
-document.getElementById("searchInput").addEventListener("input", function () {
-  const keyword = this.value;
-  searchContacts(keyword);
+// ===== EDIT =====
+function editSelected() {
+  const selected = document.querySelector(".select:checked");
+  if (!selected) return alert("Pilih satu data");
+
+  const contact = dataContacts.find((c) => c.id == selected.dataset.id);
+  editMode = true;
+
+  contactId.value = contact.id;
+  fullName.value = contact.fullName;
+  email.value = contact.email;
+  phone.value = contact.phone;
+  location.value = contact.location;
+
+  modalTitle.innerText = "Edit Contact";
+  contactModal.classList.remove("hidden");
+  contactModal.classList.add("flex");
+}
+
+// ===== DELETE =====
+function deleteSelected() {
+  const selected = document.querySelectorAll(".select:checked");
+  if (selected.length === 0) return alert("Pilih data");
+
+  if (!confirm("Yakin hapus?")) return;
+
+  const ids = [...selected].map((s) => Number(s.dataset.id));
+  dataContacts = dataContacts.filter((c) => !ids.includes(c.id));
+
+  save();
+  render();
+}
+
+// ===== SEARCH =====
+function searchContacts() {
+  const q = searchInput.value.toLowerCase();
+  render(dataContacts.filter((c) => c.fullName.toLowerCase().includes(q)));
+}
+
+// ===== CHECK ALL =====
+function toggleAll(source) {
+  document
+    .querySelectorAll(".select")
+    .forEach((cb) => (cb.checked = source.checked));
+}
+
+// ===== INIT =====
+document.addEventListener("DOMContentLoaded", () => {
+  load();
+  render();
 });
-
-displayContacts();

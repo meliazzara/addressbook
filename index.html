@@ -2,34 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Address Book</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Address Book</title>
 
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 p-6">
-    <div class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
-      <h1 class="text-2xl font-bold mb-4">Address Book</h1>
+
+  <body class="bg-pink-200 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto bg-pink-200">
+      <h1 class="text-3xl font-bold text-slate-800 mb-4">Contacts</h1>
 
       <!-- Toolbar -->
       <div class="flex justify-between items-center mb-4">
         <div class="space-x-2">
           <button
             onclick="openNew()"
-            class="bg-blue-600 text-white px-4 py-2 rounded"
+            class="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700"
           >
             + New
           </button>
           <button
             onclick="editSelected()"
-            class="bg-yellow-500 text-white px-4 py-2 rounded"
+            class="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700"
           >
             Edit
           </button>
           <button
             onclick="deleteSelected()"
-            class="bg-red-600 text-white px-4 py-2 rounded"
+            class="bg-slate-800 text-white px-4 py-2 rounded hover:bg-slate-700"
           >
             Delete
           </button>
@@ -39,61 +40,54 @@
           id="searchInput"
           onkeyup="searchContacts()"
           type="text"
-          placeholder="Search name..."
-          class="border px-3 py-2 rounded"
+          placeholder="Search..."
+          class="px-4 py-2 rounded border border-slate-400 outline-none"
         />
       </div>
 
       <!-- Table -->
-      <table class="w-full border text-sm">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="border p-2">
-              <input type="checkbox" onclick="toggleAll(this)" />
-            </th>
-            <th class="border p-2">Name</th>
-            <th class="border p-2">Email</th>
-            <th class="border p-2">Phone</th>
-            <th class="border p-2">Location</th>
-          </tr>
-        </thead>
-        <tbody id="contactTableBody"></tbody>
-      </table>
+      <div class="overflow-hidden rounded-lg shadow">
+        <table class="w-full">
+          <thead class="bg-slate-800 text-white">
+            <tr>
+              <th class="p-3">
+                <input type="checkbox" onclick="toggleAll(this)" />
+              </th>
+              <th class="p-3 text-left">Name</th>
+              <th class="p-3 text-left">Email</th>
+              <th class="p-3 text-left">Phone</th>
+              <th class="p-3 text-left">Location</th>
+            </tr>
+          </thead>
+          <tbody
+            id="contactTableBody"
+            class="bg-slate-700 text-slate-100"
+          ></tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- Modal -->
     <div
       id="contactModal"
       class="fixed inset-0 bg-black/40 hidden items-center justify-center"
     >
-      <div class="bg-white w-96 p-6 rounded shadow">
-        <h2 id="modalTitle" class="text-xl font-semibold mb-4">New Contact</h2>
+      <div class="bg-white w-96 rounded-lg p-6">
+        <h2 id="modalTitle" class="text-xl font-bold mb-4">New Contact</h2>
 
         <input type="hidden" id="contactId" />
 
-        <div class="mb-3">
-          <label class="block text-sm">Name</label>
-          <input id="fullName" class="w-full border px-3 py-2 rounded" />
-        </div>
+        <label class="block mb-1">Name</label>
+        <input id="fullName" class="w-full mb-3 p-2 border rounded" />
 
-        <div class="mb-3">
-          <label class="block text-sm">Email</label>
-          <input
-            id="email"
-            type="email"
-            class="w-full border px-3 py-2 rounded"
-          />
-        </div>
+        <label class="block mb-1">Email</label>
+        <input id="email" type="email" class="w-full mb-3 p-2 border rounded" />
 
-        <div class="mb-3">
-          <label class="block text-sm">Phone</label>
-          <input id="phone" class="w-full border px-3 py-2 rounded" />
-        </div>
+        <label class="block mb-1">Phone</label>
+        <input id="phone" class="w-full mb-3 p-2 border rounded" />
 
-        <div class="mb-4">
-          <label class="block text-sm">Location</label>
-          <input id="location" class="w-full border px-3 py-2 rounded" />
-        </div>
+        <label class="block mb-1">Location</label>
+        <input id="location" class="w-full mb-4 p-2 border rounded" />
 
         <div class="flex justify-end space-x-2">
           <button onclick="closeModal()" class="px-4 py-2 border rounded">
@@ -101,7 +95,7 @@
           </button>
           <button
             onclick="saveContact()"
-            class="px-4 py-2 bg-blue-600 text-white rounded"
+            class="bg-slate-800 text-white px-4 py-2 rounded"
           >
             Save
           </button>
@@ -109,6 +103,6 @@
       </div>
     </div>
 
-    <script src="scripts.js"></script>
+    <script src="assets/script/scripts.js"></script>
   </body>
 </html>
