@@ -2,6 +2,9 @@ const STORAGE_KEY = "addressbook_contacts";
 let dataContacts = [];
 let editMode = false;
 
+// ambil input location (FIX UTAMA)
+const locationInput = document.getElementById("location");
+
 // ===== STORAGE =====
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(dataContacts));
@@ -15,7 +18,7 @@ function load() {
 // ===== AUTO DETECT CITY =====
 function detectCity() {
   if (!navigator.geolocation) {
-    location.value = "-";
+    locationInput.value = "-";
     return;
   }
 
@@ -30,14 +33,14 @@ function detectCity() {
         );
         const data = await res.json();
 
-        location.value =
+        locationInput.value =
           data.address.city || data.address.town || data.address.village || "-";
       } catch {
-        location.value = "-";
+        locationInput.value = "-";
       }
     },
     () => {
-      location.value = "-";
+      locationInput.value = "-";
     }
   );
 }
@@ -81,12 +84,12 @@ function openNew() {
   fullName.value = "";
   email.value = "";
   phone.value = "";
-  location.value = "Detecting...";
+  locationInput.value = "";
 
   contactModal.classList.remove("hidden");
   contactModal.classList.add("flex");
 
-  detectCity(); // ⭐ AUTO
+  detectCity(); // ⭐ AUTO DETECT
 }
 
 function closeModal() {
@@ -102,7 +105,7 @@ function saveContact() {
     fullName: fullName.value,
     email: email.value,
     phone: phone.value,
-    location: location.value.trim() || "-",
+    location: locationInput.value.trim() || "-", // FIX
   };
 
   if (editMode) {
@@ -129,7 +132,7 @@ function editSelected() {
   fullName.value = contact.fullName;
   email.value = contact.email;
   phone.value = contact.phone;
-  location.value = contact.location;
+  locationInput.value = contact.location;
 
   modalTitle.innerText = "Edit Contact";
   contactModal.classList.remove("hidden");
